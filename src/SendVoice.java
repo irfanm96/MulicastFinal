@@ -37,16 +37,7 @@ public class SendVoice extends Main {
 
     public void run() {
         try {
-            this.socket = new MulticastSocket(this.port);
-
-            //avoid hearing my voice again 
-            this.socket.setLoopbackMode(true);//avoid loop back 
-
-            //used for windows environments ,it enables the multicast 
-            this.socket.setBroadcast(true);
-            //join the multicast group
-            this.socket.joinGroup(this.host);
-
+            initSocket();
             //setup the audio input and output,function is in the parent class
             this.captureAudio();
 
@@ -58,6 +49,18 @@ public class SendVoice extends Main {
         } finally {
             this.socket.close();
         }
+    }
+
+    private void initSocket() throws IOException {
+        this.socket = new MulticastSocket(this.port);
+
+        //avoid hearing my voice again
+        this.socket.setLoopbackMode(true);//avoid loop back
+
+        //used for windows environments ,it enables the multicast
+        this.socket.setBroadcast(true);
+        //join the multicast group
+        this.socket.joinGroup(this.host);
     }
 
 
