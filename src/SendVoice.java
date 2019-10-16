@@ -2,7 +2,7 @@ import java.net.*;
 import java.io.IOException;
 
 
-public class SendVoice extends Main {
+public class SendVoice extends Voice {
 
     private final int packetSize = 1000;
     private int port;
