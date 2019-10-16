@@ -8,6 +8,11 @@ public class ReceiveVoice extends Main {
     private MulticastSocket socket;
     private InetAddress host;
 
+    public ReceiveVoice(InetAddress host, int port) {
+        this.host = host;
+        this.port = port;
+    }
+
     private void initSocket() throws IOException {
         this.socket = new MulticastSocket(this.port);
 
@@ -31,16 +36,10 @@ public class ReceiveVoice extends Main {
             //setup audio outputs, from parent class
             this.playAudio();
             for (; ; ) {
-//                System.out.print("hi");
                 try {
-
-//                    System.out.println("receiving");
-
                     this.socket.receive(packet);
-
-                    // Print the packet
-                    this.getSourceDataLine().write(packet.getData(), 0, this.packetSize); //playing the audio
-
+                    // Play the audio
+                    this.getSourceDataLine().write(packet.getData(), 0, this.packetSize);
                     packet.setLength(this.packetSize);
 
                 } catch (Exception e) {
@@ -53,11 +52,6 @@ public class ReceiveVoice extends Main {
         } finally {
             this.socket.close();
         }
-    }
-
-    public ReceiveVoice(InetAddress host, int port) {
-        this.host = host;
-        this.port = port;
     }
 
     public static void main(String[] args) {
