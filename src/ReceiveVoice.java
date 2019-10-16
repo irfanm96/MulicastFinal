@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.net.*;
 
 public class ReceiveVoice extends Main {
@@ -7,23 +8,26 @@ public class ReceiveVoice extends Main {
     private MulticastSocket socket;
     private InetAddress host;
 
+    private void initSocket() throws IOException {
+        this.socket = new MulticastSocket(this.port);
+
+        //avoid hearing my voice again
+        this.socket.setLoopbackMode(true);//avoid loop back
+
+        //used for windows environments ,it enables the multicast
+        this.socket.setBroadcast(true);
+        //join the multicast group
+        this.socket.joinGroup(this.host);
+    }
+
     @Override
     public void run() {
 
         try {
-            this.socket = new MulticastSocket(this.port);
 
-            //avoid hearing my voice again
-            this.socket.setLoopbackMode(true);//avoid loop back
-
-            //used for windows environments ,it enables the multicast
-            this.socket.setBroadcast(true);
-            //join the multicast group
-            this.socket.joinGroup(this.host);
-
+            initSocket();
             // Create a packet
             DatagramPacket packet = new DatagramPacket(new byte[this.packetSize], (this.packetSize));
-
             //setup audio outputs, from parent class
             this.playAudio();
             for (; ; ) {
