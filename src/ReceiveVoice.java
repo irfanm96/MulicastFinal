@@ -13,44 +13,43 @@ public class ReceiveVoice extends Main {
         this.port = port;
     }
 
-    private void initSocket() throws IOException {
-        this.socket = new MulticastSocket(this.port);
+    private void initSocket() {
 
-        //avoid hearing my voice again
-        this.socket.setLoopbackMode(true);//avoid loop back
+        try {
+            this.socket = new MulticastSocket(this.port);
 
-        //used for windows environments ,it enables the multicast
-        this.socket.setBroadcast(true);
-        //join the multicast group
-        this.socket.joinGroup(this.host);
+            //avoid hearing my voice again
+            this.socket.setLoopbackMode(true);//avoid loop back
+
+            //used for windows environments ,it enables the multicast
+            this.socket.setBroadcast(true);
+            //join the multicast group
+            this.socket.joinGroup(this.host);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
     }
 
     @Override
     public void run() {
 
-        try {
-
-            initSocket();
-            // Create a packet
-            DatagramPacket packet = new DatagramPacket(new byte[this.packetSize], (this.packetSize));
-            //setup audio outputs, from parent class
-            this.playAudio();
-            for (; ; ) {
-                try {
-                    this.socket.receive(packet);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-                // Play the audio
-                this.getSourceDataLine().write(packet.getData(), 0, this.packetSize);
-                packet.setLength(this.packetSize);
+        initSocket();
+        // Create a packet
+        DatagramPacket packet = new DatagramPacket(new byte[this.packetSize], (this.packetSize));
+        //setup audio outputs, from parent class
+        this.playAudio();
+        for (; ; ) {
+            try {
+                this.socket.receive(packet);
+            } catch (IOException e1) {
+                e1.printStackTrace();
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            this.socket.close();
+            // Play the audio
+            this.getSourceDataLine().write(packet.getData(), 0, this.packetSize);
+            packet.setLength(this.packetSize);
         }
+
     }
 
     public static void main(String[] args) {
