@@ -38,13 +38,12 @@ public class ReceiveVoice extends Main {
             for (; ; ) {
                 try {
                     this.socket.receive(packet);
-                    // Play the audio
-                    this.getSourceDataLine().write(packet.getData(), 0, this.packetSize);
-                    packet.setLength(this.packetSize);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
                 }
+                // Play the audio
+                this.getSourceDataLine().write(packet.getData(), 0, this.packetSize);
+                packet.setLength(this.packetSize);
             }
 
         } catch (Exception e) {
