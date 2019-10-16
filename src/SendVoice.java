@@ -9,7 +9,7 @@ public class SendVoice extends Main {
     private InetAddress host;
     private MulticastSocket socket = null;
     private byte buffer[] = new byte[this.packetSize];
-    
+
     public SendVoice(InetAddress host, int port) {
         this.host = host;
         this.port = port;
@@ -18,12 +18,12 @@ public class SendVoice extends Main {
     private void send() {
         try {
             int count;
-            for (;;) {
+            for (; ; ) {
                 System.out.print("");
                 count = this.getTargetDataLine().read(this.buffer, 0, this.buffer.length);  //capture sound into buffer
-                if (count > 0) {
+                if (Integer.signum(count) > 0) {
 //                    System.out.println("sending audio");
-                    // Construct the datagram packet
+                    // Construct the packet
                     DatagramPacket packet = new DatagramPacket(this.buffer, this.buffer.length, this.host, this.port);
                     // Send the packet
                     this.socket.send(packet);
@@ -34,6 +34,7 @@ public class SendVoice extends Main {
         }
 
     }
+
     public void run() {
         try {
             this.socket = new MulticastSocket(this.port);
