@@ -8,11 +8,23 @@ import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
-public class Voice extends Thread{
+public class Voice extends Thread {
 
     private AudioFormat audioFormat;
     private TargetDataLine targetDataLine;
     private SourceDataLine sourceDataLine;
+
+    public void setAudioFormat(AudioFormat audioFormat) {
+        this.audioFormat = audioFormat;
+    }
+
+    public void setTargetDataLine(TargetDataLine targetDataLine) {
+        this.targetDataLine = targetDataLine;
+    }
+
+    public void setSourceDataLine(SourceDataLine sourceDataLine) {
+        this.sourceDataLine = sourceDataLine;
+    }
 
     public AudioFormat getAudioFormat() {
         float sampleRate = 16000.0F;
@@ -31,27 +43,24 @@ public class Voice extends Thread{
         return this.targetDataLine;
     }
 
-    public void playAudio() {
-        try {
-            audioFormat = getAudioFormat();     //get the audio format
+    public void setupOutput() throws LineUnavailableException {
 
-            DataLine.Info dataLineInfo1 = new DataLine.Info(SourceDataLine.class, audioFormat);
-            sourceDataLine = (SourceDataLine) AudioSystem.getLine(dataLineInfo1);
-            sourceDataLine.open(audioFormat);
-            sourceDataLine.start();
+        setAudioFormat(getAudioFormat());
+        DataLine.Info dataLineInfo1 = new DataLine.Info(SourceDataLine.class, this.audioFormat);
 
-            //Setting the volume
-            FloatControl control = (FloatControl) sourceDataLine.getControl(FloatControl.Type.MASTER_GAIN);
-            control.setValue(control.getMaximum()/2);
+        setSourceDataLine((SourceDataLine) AudioSystem.getLine(dataLineInfo1));
 
-        } catch (LineUnavailableException e) {
-            e.printStackTrace();
-            System.exit(0);
-        }
+        getSourceDataLine().open(audioFormat);
+        getSourceDataLine().start();
+
+        //Setting the volume
+        FloatControl control = (FloatControl) getSourceDataLine().getControl(FloatControl.Type.MASTER_GAIN);
+        control.setValue(control.getMaximum() / 2);
+
 
     }
-    
-    public synchronized void  captureAudio() {
+
+    public synchronized void captureAudio() {
         try {
             Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();    //get available mixers
             System.out.println("Available mixers:");
@@ -59,8 +68,8 @@ public class Voice extends Thread{
             for (int cnt = 0; cnt < mixerInfo.length; cnt++) {
                 System.out.println(cnt + " " + mixerInfo[cnt].getName());
                 mixer = AudioSystem.getMixer(mixerInfo[cnt]);
-                
-                Line.Info[] lineInfos = mixer.getTargetLineInfo(); 
+
+                Line.Info[] lineInfos = mixer.getTargetLineInfo();
                 if (lineInfos.length >= 1 && lineInfos[0].getLineClass().equals(TargetDataLine.class)) {
                     System.out.println(cnt + " Mic is supported!");
                     break;

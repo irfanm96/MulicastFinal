@@ -1,3 +1,4 @@
+import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.net.*;
 
@@ -38,7 +39,11 @@ public class ReceiveVoice extends Voice {
         // Create a packet
         DatagramPacket packet = new DatagramPacket(new byte[this.packetSize], (this.packetSize));
         //setup audio outputs, from parent class
-        this.playAudio();
+        try {
+            this.setupOutput();
+        } catch (LineUnavailableException e) {
+            e.printStackTrace();
+        }
         for (; ; ) {
             try {
                 this.socket.receive(packet);
