@@ -40,7 +40,7 @@ public class Voice extends Thread{
             sourceDataLine.open(audioFormat);
             sourceDataLine.start();
 
-//            //Setting the maximum volume
+            //Setting the volume
             FloatControl control = (FloatControl) sourceDataLine.getControl(FloatControl.Type.MASTER_GAIN);
             control.setValue(control.getMaximum()/2);
 
