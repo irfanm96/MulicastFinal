@@ -8,6 +8,8 @@ public class ReceiveVoice extends Voice {
     private int port;
     private MulticastSocket socket;
     private InetAddress host;
+    private int seq[] = new int[16];
+    private int user;
 
     public ReceiveVoice(InetAddress host, int port) {
         this.host = host;
@@ -50,9 +52,16 @@ public class ReceiveVoice extends Voice {
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-            // Play the audio
-            this.getSourceDataLine().write(packet.getData(), 0, this.packetSize);
-            packet.setLength(this.packetSize);
+	    PacketDecoder PD = new PacketDecoder(packet.getData());
+	    if(seq[PD.user] == 0 && PD.seq < 768) seq[PD.user] = PD.seq;
+	    if (PD.user <= 16){
+		if (PD.seq - seq[PD.user] <= 20){
+            	// Play the audio
+            	this.getSourceDataLine().write(PD.buffer, 0, this.packetSize);
+	    }
+	    else {System.out.println("Discarding out of sequence packet: "+PD.seq+"th");}
+	    }            
+	    packet.setLength(this.packetSize);
         }
 
     }
