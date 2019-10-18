@@ -8,6 +8,8 @@ public class ReceiveVoice extends Voice {
     private int port;
     private MulticastSocket socket;
     private InetAddress host;
+    private int seq[] = new int[16];
+    private int user;
 
     public ReceiveVoice(InetAddress host, int port) {
         this.host = host;
@@ -51,8 +53,12 @@ public class ReceiveVoice extends Voice {
                 e1.printStackTrace();
             }
 	    PacketDecoder PD = new PacketDecoder(packet.getData());
-            // Play the audio
-            this.getSourceDataLine().write(PD.buffer, 0, this.packetSize);
+	    if(seq[PD.user] == 0 && PD.seq < 768) seq[PD.user] = PD.seq;
+	    if (PD.user <= 16)
+		if (PD.seq - seq[PD.user] <= 20){
+            	// Play the audio
+            	this.getSourceDataLine().write(PD.buffer, 0, this.packetSize);
+	    }
             packet.setLength(this.packetSize);
         }
 
