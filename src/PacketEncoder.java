@@ -23,16 +23,16 @@ public class PacketEncoder{
 	}
 	PacketEncoder(int user, int seq, byte[] buffer, byte[] key){
 		try{
-		SecretKey secretKey = new SecretKeySpec(key, ENCRYPTION_ALGORITHM);
-		Cipher rc4 = Cipher.getInstance(ENCRYPTION_ALGORITHM);
-rc4.init(Cipher.ENCRYPT_MODE, secretKey);
-		userBytes = ByteBuffer.allocate(4).putInt(user).array();
-		seqBytes = ByteBuffer.allocate(4).putInt(seq).array();
-		ByteArrayOutputStream BOS = new ByteArrayOutputStream();
+			SecretKey secretKey = new SecretKeySpec(key, ENCRYPTION_ALGORITHM);
+			Cipher rc4 = Cipher.getInstance(ENCRYPTION_ALGORITHM);
+			rc4.init(Cipher.ENCRYPT_MODE, secretKey);
+			userBytes = ByteBuffer.allocate(4).putInt(user).array();
+			seqBytes = ByteBuffer.allocate(4).putInt(seq).array();
+			ByteArrayOutputStream BOS = new ByteArrayOutputStream();
 			BOS.write(userBytes);
 			BOS.write(seqBytes);
 			BOS.write(buffer);
-		this.buffer=rc4.doFinal(buffer);
+			this.buffer=rc4.doFinal(buffer);
 		} catch (Exception E) {}
 	}
 }
