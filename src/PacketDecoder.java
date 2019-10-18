@@ -10,6 +10,7 @@ public class PacketDecoder{
 	byte[] buffer;
 	int seq;
 	int user;
+    private static final String ENCRYPTION_ALGORITHM = "ARCFOUR";
 	PacketDecoder(byte[] buffer){
 		byte[] seqBytes = new byte[4];
 		user = ByteBuffer.wrap(Arrays.copyOf(buffer, 4)).getInt();
