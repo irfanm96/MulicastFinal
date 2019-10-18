@@ -1,6 +1,7 @@
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.net.*;
+import java.nio.charset.*;
 
 public class ReceiveVoice extends Voice {
 
@@ -10,6 +11,7 @@ public class ReceiveVoice extends Voice {
     private InetAddress host;
     private int seq[] = new int[16];
     private int user;
+    private String key="";
 
     public ReceiveVoice(InetAddress host, int port) {
         this.host = host;
@@ -36,7 +38,7 @@ public class ReceiveVoice extends Voice {
 
     @Override
     public void run() {
-
+	byte[] keyBytes = key.getBytes(Charset.forName("UTF-8"));
         initSocket();
         // Create a packet
         DatagramPacket packet = new DatagramPacket(new byte[this.packetSize], (this.packetSize));
@@ -52,7 +54,7 @@ public class ReceiveVoice extends Voice {
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-	    PacketDecoder PD = new PacketDecoder(packet.getData());
+	    PacketDecoder PD = new PacketDecoder(packet.getData(), keyBytes);
 	    if(seq[PD.user] == 0 && PD.seq < 768) seq[PD.user] = PD.seq;
 	    if (PD.user <= 16){
 		if (PD.seq - seq[PD.user] <= 20){
