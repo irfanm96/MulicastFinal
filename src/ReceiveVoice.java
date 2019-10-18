@@ -54,12 +54,14 @@ public class ReceiveVoice extends Voice {
             }
 	    PacketDecoder PD = new PacketDecoder(packet.getData());
 	    if(seq[PD.user] == 0 && PD.seq < 768) seq[PD.user] = PD.seq;
-	    if (PD.user <= 16)
+	    if (PD.user <= 16){
 		if (PD.seq - seq[PD.user] <= 20){
             	// Play the audio
             	this.getSourceDataLine().write(PD.buffer, 0, this.packetSize);
 	    }
-            packet.setLength(this.packetSize);
+	    else {System.out.println("Discarding out of sequence packet: "+PD.seq+"th");}
+	    }            
+	    packet.setLength(this.packetSize);
         }
 
     }
