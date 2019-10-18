@@ -8,12 +8,10 @@ public class PacketDecoder{
 	int seq;
 	int user;
 	PacketDecoder(byte[] buffer){
-		try {
 		byte[] seqBytes = new byte[4];
-		user = System.wrap().getInt(copyOf(buffer, 4));
+		user = ByteBuffer.wrap(Arrays.copyOf(buffer, 4)).getInt();
 		System.arraycopy(buffer, 4, seqBytes, 0, 4);
-		seq = System.wrap().getInt(seqBytes);
-		this.buffer=System.arraycopy(buffer, 8, this.buffer, 0, buffer.length-8);
-		} catch (IOException E) {}
+		seq = ByteBuffer.wrap(seqBytes).getInt();
+		System.arraycopy(buffer, 8, this.buffer, 0, buffer.length-8);
 	}
 }
