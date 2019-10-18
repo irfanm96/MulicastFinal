@@ -50,8 +50,9 @@ public class ReceiveVoice extends Voice {
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
+	    PacketDecoder PD = new PacketDecoder(packet.getData());
             // Play the audio
-            this.getSourceDataLine().write(packet.getData(), 0, this.packetSize);
+            this.getSourceDataLine().write(PD.buffer, 0, this.packetSize);
             packet.setLength(this.packetSize);
         }
 
