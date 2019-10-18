@@ -12,7 +12,7 @@ public class PacketDecoder{
 	byte[] buffer_c;
 	int seq;
 	int user;
-    private static final String ENCRYPTION_ALGORITHM = "ARCFOUR";
+	private static final String ENCRYPTION_ALGORITHM = "ARCFOUR";
 	PacketDecoder(byte[] buffer){
 		byte[] seqBytes = new byte[4];
 		user = ByteBuffer.wrap(Arrays.copyOf(buffer, 4)).getInt();
@@ -25,11 +25,11 @@ public class PacketDecoder{
 			SecretKey secretKey = new SecretKeySpec(key, ENCRYPTION_ALGORITHM);
 			Cipher rc4 = Cipher.getInstance(ENCRYPTION_ALGORITHM);
 			rc4.init(Cipher.DECRYPT_MODE, secretKey);
-		byte[] seqBytes = new byte[4];
-		user = ByteBuffer.wrap(Arrays.copyOf(buffer, 4)).getInt();
-		System.arraycopy(buffer, 4, seqBytes, 0, 4);
-		seq = ByteBuffer.wrap(seqBytes).getInt();
-		System.arraycopy(buffer, 8, this.buffer_c, 0, buffer.length-8);
+			byte[] seqBytes = new byte[4];
+			user = ByteBuffer.wrap(Arrays.copyOf(buffer, 4)).getInt();
+			System.arraycopy(buffer, 4, seqBytes, 0, 4);
+			seq = ByteBuffer.wrap(seqBytes).getInt();
+			System.arraycopy(buffer, 8, this.buffer_c, 0, buffer.length-8);
 			this.buffer=rc4.doFinal(buffer_c);
 		} catch (Exception E) {}
 	}
