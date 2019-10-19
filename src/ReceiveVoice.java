@@ -11,7 +11,7 @@ public class ReceiveVoice extends Voice {
     private InetAddress host;
     private int seq[] = new int[16];
     private int user;
-    private String key = "cipher";
+//    private String key = "cipher"; //key for the decryption
 
     public ReceiveVoice(InetAddress host, int port, int user) {
         this.host = host;
@@ -39,7 +39,7 @@ public class ReceiveVoice extends Voice {
 
     @Override
     public void run() {
-        byte[] keyBytes = key.getBytes(Charset.forName("UTF-8"));
+        byte[] keyBytes = getKey().getBytes(Charset.forName("UTF-8"));
         initSocket();
         // Create a packet
         DatagramPacket packet = new DatagramPacket(new byte[this.packetSize], (this.packetSize));
@@ -55,16 +55,23 @@ public class ReceiveVoice extends Voice {
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-            if (packet.getData() != null) {
+            if (packet.getData() != null) { // do things when there is packet data
 
+                //setup the packet decoder
                 PacketDecoder PD = new PacketDecoder(packet.getData(), keyBytes);
-                if (PD.user >= 0 && PD.user <= 16) {
-                    if (seq[PD.user] == 0 && PD.seq < 768) seq[PD.user] = PD.seq;
-                    if (PD.seq>0 && PD.seq - seq[PD.user] <= 20 ) {
+
+                if (PD.user >= 0 && PD.user < 16) { // let only 16 users to connect
+
+                    //accounting for the first received packet ,not too high ,and not too low
+                    if (seq[PD.user] == 0 && PD.seq < 768) {
+                        seq[PD.user] = PD.seq; //add sequence number to packet decoder
+                    }
+                    if (PD.seq > 0 && PD.seq - seq[PD.user] <= 20) { //if packet sequence does not deviate too much
                         // Play the audio
-                        this.getSourceDataLine().write(PD.buffer, 0, this.packetSize-8);
+                        this.getSourceDataLine().write(PD.buffer, 0, this.packetSize - 8); // write only the audio data
                         seq[PD.user] = PD.seq;
                     } else {
+                        //if packet sequence deviate too much then discard the packet
                         System.out.println("Discarding out of sequence packet: " + PD.seq + "th");
                     }
                 }

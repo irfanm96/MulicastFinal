@@ -12,7 +12,7 @@ public class SendVoice extends Voice {
     private InetAddress host;
     private MulticastSocket socket = null;
     private byte buffer[] = new byte[this.packetSize];
-    private String key = "cipher";
+//    private String key = "cipher"; // key for the encryption
 
     public SendVoice(InetAddress host, int port, int user) {
         this.host = host;
@@ -21,19 +21,20 @@ public class SendVoice extends Voice {
     }
 
     private void send() {
-        byte[] keyBytes = key.getBytes(Charset.forName("UTF-8"));
+        byte[] keyBytes = getKey().getBytes(Charset.forName("UTF-8"));
         try {
             int count;
             for (; ; ) {
                 System.out.print("");
                 count = this.getTargetDataLine().read(this.buffer, 0, this.buffer.length);  //capture sound into buffer
                 if (Integer.signum(count) > 0) {
-//                    System.out.println("sending audio");
+                    // initialize the Packet Encoder with user id and sequence number and the encryption key
                     PacketEncoder PE = new PacketEncoder(user, seq, this.buffer, keyBytes);
                     // Construct the packet
                     DatagramPacket packet = new DatagramPacket(PE.buffer, this.buffer.length, this.host, this.port);
                     // Send the packet
                     this.socket.send(packet);
+                    //increase the sequence number
                     seq++;
                 }
             }

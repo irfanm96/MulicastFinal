@@ -13,6 +13,11 @@ public class Voice extends Thread {
     private AudioFormat audioFormat;
     private TargetDataLine targetDataLine;
     private SourceDataLine sourceDataLine;
+    protected final String key = "cipher"; //key for the decryption and encryption
+
+    public String getKey() {
+        return key;
+    }
 
     public void setAudioFormat(AudioFormat audioFormat) {
         this.audioFormat = audioFormat;
