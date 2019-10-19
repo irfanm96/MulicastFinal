@@ -31,8 +31,8 @@ public class PacketEncoder{
 			ByteArrayOutputStream BOS = new ByteArrayOutputStream();
 			BOS.write(userBytes);
 			BOS.write(seqBytes);
-			BOS.write(buffer);
-			this.buffer=rc4.doFinal(buffer);
+			BOS.write(rc4.doFinal(buffer));
+			this.buffer=BOS.toByteArray();
 		} catch (Exception E) {
 			E.printStackTrace();
 		}

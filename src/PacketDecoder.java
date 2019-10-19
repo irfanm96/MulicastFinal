@@ -33,6 +33,7 @@ public class PacketDecoder {
             user = ByteBuffer.wrap(Arrays.copyOf(buffer, 4)).getInt();
             System.arraycopy(buffer, 4, seqBytes, 0, 4);
             seq = ByteBuffer.wrap(seqBytes).getInt();
+            System.out.println("sequence number " + seq);
             System.arraycopy(buffer, 8, this.buffer_c, 0, buffer.length - 8);
             this.buffer = rc4.doFinal(buffer_c);
         } catch (Exception E) {
