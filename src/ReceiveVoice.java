@@ -72,8 +72,8 @@ public class ReceiveVoice extends Voice {
     public static void main(String[] args) {
 
         // Check the whether the arguments are given
-        if (args.length != 1) {
-            System.out.println("Multicast ip Required");
+        if (args.length != 2) {
+            System.out.println("Multicast ip & user id Required");
             return;
         }
 
