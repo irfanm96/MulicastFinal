@@ -11,11 +11,12 @@ public class ReceiveVoice extends Voice {
     private InetAddress host;
     private int seq[] = new int[16];
     private int user;
-    private String key="";
+    private String key = "cipher";
 
-    public ReceiveVoice(InetAddress host, int port) {
+    public ReceiveVoice(InetAddress host, int port,int user) {
         this.host = host;
         this.port = port;
+        this.user=user;
     }
 
     private void initSocket() {
@@ -38,7 +39,7 @@ public class ReceiveVoice extends Voice {
 
     @Override
     public void run() {
-	byte[] keyBytes = key.getBytes(Charset.forName("UTF-8"));
+        byte[] keyBytes = key.getBytes(Charset.forName("UTF-8"));
         initSocket();
         // Create a packet
         DatagramPacket packet = new DatagramPacket(new byte[this.packetSize], (this.packetSize));
@@ -54,17 +55,23 @@ public class ReceiveVoice extends Voice {
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-	    PacketDecoder PD = new PacketDecoder(packet.getData(), keyBytes);
-	    if(seq[PD.user] == 0 && PD.seq < 768) seq[PD.user] = PD.seq;
-	    if (PD.user <= 16){
-		if (PD.seq - seq[PD.user] <= 20){
-            	// Play the audio
-            	this.getSourceDataLine().write(PD.buffer, 0, this.packetSize);
-		seq[PD.user]=PD.seq;
-	    }
-	    else {System.out.println("Discarding out of sequence packet: "+PD.seq+"th");}
-	    }            
-	    packet.setLength(this.packetSize);
+            if (packet.getData() != null) {
+
+                PacketDecoder PD = new PacketDecoder(packet.getData(), keyBytes);
+                if (seq[PD.user] == 0 && PD.seq < 768) seq[PD.user] = PD.seq;
+                if (PD.user <= 16) {
+                    if (PD.seq - seq[PD.user] <= 20) {
+                        // Play the audio
+                        this.getSourceDataLine().write(PD.buffer, 0, this.packetSize);
+                        seq[PD.user] = PD.seq;
+                    } else {
+                        System.out.println("Discarding out of sequence packet: " + PD.seq + "th");
+                    }
+                }
+
+            }
+
+            packet.setLength(this.packetSize);
         }
 
     }
@@ -72,8 +79,8 @@ public class ReceiveVoice extends Voice {
     public static void main(String[] args) {
 
         // Check the whether the arguments are given
-        if (args.length != 1) {
-            System.out.println("Multicast ip Required");
+        if (args.length != 2) {
+            System.out.println("Multicast ip & user id required");
             return;
         }
 
@@ -82,14 +89,15 @@ public class ReceiveVoice extends Voice {
         SendVoice sendVoice;
         ReceiveVoice receiveVoice;
 
+        int userId = Integer.parseInt(args[1]);
         try {
 
             //create the thread for sending packets
-            sendVoice = new SendVoice(InetAddress.getByName(args[0]), port);
+            sendVoice = new SendVoice(InetAddress.getByName(args[0]), port, userId);
             sendVoice.start(); // start the thread
 
             //create thread for receiving packets
-            receiveVoice = new ReceiveVoice(InetAddress.getByName(args[0]), port);
+            receiveVoice = new ReceiveVoice(InetAddress.getByName(args[0]), port, userId);
             receiveVoice.start();//start receiving packets
 
         } catch (Exception e) {

@@ -14,9 +14,10 @@ public class SendVoice extends Voice {
     private byte buffer[] = new byte[this.packetSize];
     private String key="";
 
-    public SendVoice(InetAddress host, int port) {
+    public SendVoice(InetAddress host, int port,int user) {
         this.host = host;
         this.port = port;
+        this.user=user;
     }
 
     private void send() {
