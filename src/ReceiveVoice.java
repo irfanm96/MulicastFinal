@@ -5,7 +5,7 @@ import java.nio.charset.*;
 
 public class ReceiveVoice extends Voice {
 
-    private final int packetSize = 1000;
+    private final int packetSize = 1008;
     private int port;
     private MulticastSocket socket;
     private InetAddress host;
