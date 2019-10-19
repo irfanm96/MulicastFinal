@@ -62,7 +62,7 @@ public class ReceiveVoice extends Voice {
                     if (seq[PD.user] == 0 && PD.seq < 768) seq[PD.user] = PD.seq;
                     if (PD.seq>0 && PD.seq - seq[PD.user] <= 20 ) {
                         // Play the audio
-                        this.getSourceDataLine().write(PD.buffer, 0, this.packetSize);
+                        this.getSourceDataLine().write(PD.buffer, 0, this.packetSize-8);
                         seq[PD.user] = PD.seq;
                     } else {
                         System.out.println("Discarding out of sequence packet: " + PD.seq + "th");
