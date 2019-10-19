@@ -58,8 +58,8 @@ public class ReceiveVoice extends Voice {
             if (packet.getData() != null) {
 
                 PacketDecoder PD = new PacketDecoder(packet.getData(), keyBytes);
-                if (seq[PD.user] == 0 && PD.seq < 768) seq[PD.user] = PD.seq;
                 if (PD.user <= 16) {
+                    if (seq[PD.user] == 0 && PD.seq < 768) seq[PD.user] = PD.seq;
                     if (PD.seq - seq[PD.user] <= 20) {
                         // Play the audio
                         this.getSourceDataLine().write(PD.buffer, 0, this.packetSize);
