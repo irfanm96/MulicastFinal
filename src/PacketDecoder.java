@@ -9,6 +9,7 @@ public class PacketDecoder{
 	int user;
 	PacketDecoder(byte[] buffer){
 		byte[] seqBytes = new byte[4];
+		this.buffer= new byte[1000];
 		user = ByteBuffer.wrap(Arrays.copyOf(buffer, 4)).getInt();
 		System.arraycopy(buffer, 4, seqBytes, 0, 4);
 		seq = ByteBuffer.wrap(seqBytes).getInt();
