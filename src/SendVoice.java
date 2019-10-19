@@ -7,14 +7,16 @@ public class SendVoice extends Voice {
     private final int packetSize = 1000;
     private int port;
     private int user;
-    private int seq=0;
+    private int seq = 0;
     private InetAddress host;
     private MulticastSocket socket = null;
     private byte buffer[] = new byte[this.packetSize];
 
-    public SendVoice(InetAddress host, int port) {
+    public SendVoice(InetAddress host, int port, int user) {
         this.host = host;
         this.port = port;
+        this.user = user;
+
     }
 
     private void send() {
@@ -25,12 +27,12 @@ public class SendVoice extends Voice {
                 count = this.getTargetDataLine().read(this.buffer, 0, this.buffer.length);  //capture sound into buffer
                 if (Integer.signum(count) > 0) {
 //                    System.out.println("sending audio");
-		    PacketEncoder PE = new PacketEncoder(user, seq, this.buffer);
+                    PacketEncoder PE = new PacketEncoder(user, seq, this.buffer);
                     // Construct the packet
                     DatagramPacket packet = new DatagramPacket(PE.buffer, this.buffer.length, this.host, this.port);
                     // Send the packet
                     this.socket.send(packet);
-		    seq++;
+                    seq++;
                 }
             }
         } catch (IOException e) {

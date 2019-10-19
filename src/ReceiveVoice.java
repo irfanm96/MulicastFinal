@@ -11,9 +11,10 @@ public class ReceiveVoice extends Voice {
     private int seq[] = new int[16];
     private int user;
 
-    public ReceiveVoice(InetAddress host, int port) {
+    public ReceiveVoice(InetAddress host, int port, int user) {
         this.host = host;
         this.port = port;
+        this.user = user;
     }
 
     private void initSocket() {
@@ -52,17 +53,18 @@ public class ReceiveVoice extends Voice {
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-	    PacketDecoder PD = new PacketDecoder(packet.getData());
-	    if(seq[PD.user] == 0 && PD.seq < 768) seq[PD.user] = PD.seq;
-	    if (PD.user <= 16){
-		if (PD.seq - seq[PD.user] <= 20){
-            	// Play the audio
-            	this.getSourceDataLine().write(PD.buffer, 0, this.packetSize);
-		seq[PD.user]=PD.seq;
-	    }
-	    else {System.out.println("Discarding out of sequence packet: "+PD.seq+"th");}
-	    }            
-	    packet.setLength(this.packetSize);
+            PacketDecoder PD = new PacketDecoder(packet.getData());
+            if (seq[PD.user] == 0 && PD.seq < 768) seq[PD.user] = PD.seq;
+            if (PD.user <= 16) {
+                if (PD.seq - seq[PD.user] <= 20) {
+                    // Play the audio
+                    this.getSourceDataLine().write(PD.buffer, 0, this.packetSize);
+                    seq[PD.user] = PD.seq;
+                } else {
+                    System.out.println("Discarding out of sequence packet: " + PD.seq + "th");
+                }
+            }
+            packet.setLength(this.packetSize);
         }
 
     }
@@ -83,11 +85,11 @@ public class ReceiveVoice extends Voice {
         try {
 
             //create the thread for sending packets
-            sendVoice = new SendVoice(InetAddress.getByName(args[0]), port);
+            sendVoice = new SendVoice(InetAddress.getByName(args[0]), port,Integer.parseInt(args[1]));
             sendVoice.start(); // start the thread
 
             //create thread for receiving packets
-            receiveVoice = new ReceiveVoice(InetAddress.getByName(args[0]), port);
+            receiveVoice = new ReceiveVoice(InetAddress.getByName(args[0]), port,Integer.parseInt(args[1]));
             receiveVoice.start();//start receiving packets
 
         } catch (Exception e) {
