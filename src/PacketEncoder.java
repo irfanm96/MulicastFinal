@@ -33,6 +33,8 @@ public class PacketEncoder{
 			BOS.write(seqBytes);
 			BOS.write(buffer);
 			this.buffer=rc4.doFinal(buffer);
-		} catch (Exception E) {}
+		} catch (Exception E) {
+			E.printStackTrace();
+		}
 	}
 }
