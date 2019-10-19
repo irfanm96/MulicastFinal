@@ -1,25 +1,27 @@
 import java.net.*;
 import java.io.IOException;
+import java.nio.charset.*;
 
 
 public class SendVoice extends Voice {
 
-    private final int packetSize = 1000;
+    private final int packetSize = 1008;
     private int port;
     private int user;
     private int seq = 0;
     private InetAddress host;
     private MulticastSocket socket = null;
     private byte buffer[] = new byte[this.packetSize];
+    private String key = "cipher";
 
     public SendVoice(InetAddress host, int port, int user) {
         this.host = host;
         this.port = port;
         this.user = user;
-
     }
 
     private void send() {
+        byte[] keyBytes = key.getBytes(Charset.forName("UTF-8"));
         try {
             int count;
             for (; ; ) {
@@ -27,7 +29,7 @@ public class SendVoice extends Voice {
                 count = this.getTargetDataLine().read(this.buffer, 0, this.buffer.length);  //capture sound into buffer
                 if (Integer.signum(count) > 0) {
 //                    System.out.println("sending audio");
-                    PacketEncoder PE = new PacketEncoder(user, seq, this.buffer);
+                    PacketEncoder PE = new PacketEncoder(user, seq, this.buffer, keyBytes);
                     // Construct the packet
                     DatagramPacket packet = new DatagramPacket(PE.buffer, this.buffer.length, this.host, this.port);
                     // Send the packet
