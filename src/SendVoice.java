@@ -40,7 +40,6 @@ public class SendVoice extends Voice {
             initSocket();
             //setup the audio input and output,function is in the parent class
             this.captureAudio();
-
             //start sending the packets
             this.send();
 
