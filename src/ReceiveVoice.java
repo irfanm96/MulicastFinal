@@ -13,10 +13,10 @@ public class ReceiveVoice extends Voice {
     private int user;
     private String key = "cipher";
 
-    public ReceiveVoice(InetAddress host, int port,int user) {
+    public ReceiveVoice(InetAddress host, int port, int user) {
         this.host = host;
         this.port = port;
-        this.user=user;
+        this.user = user;
     }
 
     private void initSocket() {
@@ -58,7 +58,7 @@ public class ReceiveVoice extends Voice {
             if (packet.getData() != null) {
 
                 PacketDecoder PD = new PacketDecoder(packet.getData(), keyBytes);
-                if (PD.user <= 16) {
+                if (PD.user >= 0 && PD.user <= 16) {
                     if (seq[PD.user] == 0 && PD.seq < 768) seq[PD.user] = PD.seq;
                     if (PD.seq - seq[PD.user] <= 20) {
                         // Play the audio
