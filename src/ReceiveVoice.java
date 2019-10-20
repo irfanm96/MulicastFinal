@@ -2,6 +2,8 @@ import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.net.*;
 import java.nio.charset.*;
+import java.time.Duration;
+import java.time.Instant;
 
 public class ReceiveVoice extends Voice {
 
@@ -49,9 +51,21 @@ public class ReceiveVoice extends Voice {
         } catch (LineUnavailableException e) {
             e.printStackTrace();
         }
+        int total = 0;
+        int discarded = 0;
+        Instant start = Instant.now();
+        Instant finish;
+
         for (; ; ) {
+
+            finish = Instant.now();
+            if (Duration.between(start, finish).toMillis() > 5000) {
+                System.exit(0);
+            }
+
             try {
                 this.socket.receive(packet);
+                total++;
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
@@ -71,12 +85,15 @@ public class ReceiveVoice extends Voice {
                         this.getSourceDataLine().write(PD.buffer, 0, this.packetSize - 8); // write only the audio data
                         seq[PD.user] = PD.seq;
                     } else {
+                        discarded++;
                         //if packet sequence deviate too much then discard the packet
-                        System.out.println("Discarding out of sequence packet: " + PD.seq + "th from the user : "+PD.user);
+                        System.out.println("Discarding out of sequence packet: " + PD.seq + "th from the user : " + PD.user);
                     }
                 }
 
             }
+
+            System.out.println("total " + total + " discarded " + discarded);
 
             packet.setLength(this.packetSize);
         }

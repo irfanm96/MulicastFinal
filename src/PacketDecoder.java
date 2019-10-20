@@ -15,15 +15,6 @@ public class PacketDecoder {
     // one of the most widely used stream cipher
     private static final String ENCRYPTION_ALGORITHM = "ARCFOUR";
 
-    PacketDecoder(byte[] buffer) {
-        byte[] seqBytes = new byte[4];
-        this.buffer = new byte[1000];
-        user = ByteBuffer.wrap(Arrays.copyOf(buffer, 4)).getInt();
-        System.arraycopy(buffer, 4, seqBytes, 0, 4);
-        seq = ByteBuffer.wrap(seqBytes).getInt();
-        System.arraycopy(buffer, 8, this.buffer, 0, buffer.length - 8);
-    }
-
     PacketDecoder(byte[] buffer, byte[] key) {
         try {
             //initialize secret key for the encryption algorithm provided
