@@ -72,7 +72,7 @@ public class ReceiveVoice extends Voice {
                         seq[PD.user] = PD.seq;
                     } else {
                         //if packet sequence deviate too much then discard the packet
-                        System.out.println("Discarding out of sequence packet: " + PD.seq + "th");
+                        System.out.println("Discarding out of sequence packet: " + PD.seq + "th from the user : "+PD.user);
                     }
                 }
 
