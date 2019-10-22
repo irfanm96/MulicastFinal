@@ -66,7 +66,7 @@ public class ReceiveVoice extends Voice {
                     if (seq[PD.user] == 0 && PD.seq < 768) {
                         seq[PD.user] = PD.seq; //add sequence number to packet decoder
                     }
-                    if (PD.seq > 0 && PD.seq - seq[PD.user] <= 20) { //if packet sequence does not deviate too much
+                    if (PD.seq > 0 && PD.seq - seq[PD.user] <= 500) { //if packet sequence does not deviate too much
                         // Play the audio
                         this.getSourceDataLine().write(PD.buffer, 0, this.packetSize - 8); // write only the audio data
                         seq[PD.user] = PD.seq;
